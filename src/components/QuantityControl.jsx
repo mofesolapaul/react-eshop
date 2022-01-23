@@ -1,42 +1,35 @@
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons/lib/icons";
 import { Button } from "antd";
-import { useState } from "react";
-import Action from "../store/Action";
-import { ActionEnum } from "../store/ActionEnum";
-import { useCartContext } from "../store/CartContext";
+import { Action } from "../models";
+import { CartActionEnum } from "../enums";
+import { useCartContext } from "../contexts";
 
 const QuantityControl = ({ item }) => {
-  const [quantity, setQuantity] = useState(0);
-  const { cartState, cartDispatch } = useCartContext();
+  const { cartState: cart, cartDispatch } = useCartContext();
 
   const add = () => {
-    if (quantity >= item.quantity) {
-      return;
-    }
-    cartDispatch(new Action(ActionEnum.ADD_ITEM, item));
-    setQuantity(quantity + 1);
+    if (getQuantity() >= item.quantity) return;
+    cartDispatch(new Action(CartActionEnum.ADD_ITEM, item));
   };
   const subtract = () => {
-    if (quantity < 1) {
-      return;
-    }
-    cartDispatch(new Action(ActionEnum.REMOVE_ITEM, item));
-    setQuantity(quantity - 1);
+    if (getQuantity() < 1) return;
+    cartDispatch(new Action(CartActionEnum.REMOVE_ITEM, item));
   };
+  const getQuantity = () => cart[item.id]?.quantity || 0;
 
   return (
     <>
       <Button
         onClick={subtract}
-        disabled={!quantity}
+        disabled={!cart[item.id]}
         icon={<MinusOutlined />}
       />
       <Button disabled={true} style={{ background: "#fff", color: "#000" }}>
-        {quantity}
+        {getQuantity()}
       </Button>
       <Button
         onClick={add}
-        disabled={quantity >= item.quantity}
+        disabled={getQuantity() >= item.quantity}
         icon={<PlusOutlined />}
       />
     </>

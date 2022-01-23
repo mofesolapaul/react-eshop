@@ -1,12 +1,13 @@
-import { Card, List } from "antd";
-import { useReducer } from "react";
+import { PageHeader } from "antd";
+import { useEffect, useReducer, useState } from "react";
 import "./App.css";
-import ProductImage from "./components/ProductImage";
-import QuantityControl from "./components/QuantityControl";
-import CartContext from "./store/CartContext";
-import { cartReducer } from "./store/CartReducer";
-
-const { Meta } = Card;
+import Cart from "./components/Cart";
+import CartIcon from "./components/CartIcon";
+import ProductsList from "./components/ProductsList";
+import { CartContext } from "./contexts";
+import { ProductActionEnum } from "./enums";
+import { Action } from "./models";
+import { cartReducer, productsReducer } from "./reducers";
 
 const products = [
   {
@@ -15,9 +16,9 @@ const products = [
     description: "In congue. Etiam justo.",
     price: "€82,69",
     images: [
-      "http://dummyimage.com/1080x1080.png/cc0000/ffffff",
-      "http://dummyimage.com/1080x1080.png/5fa2dd/ffffff",
-      "http://dummyimage.com/1080x1080.png/ff4444/ffffff",
+      "https://picsum.photos/seed/react-eshop-1/1080/1080",
+      "https://picsum.photos/seed/react-eshop-2/1080/1080",
+      "https://picsum.photos/seed/react-eshop-3/1080/1080",
     ],
     quantity: 9,
   },
@@ -28,34 +29,45 @@ const products = [
       "Ut at dolor quis odio consequat varius. Integer ac leo. Pellentesque ultrices mattis odio.",
     price: "€55,04",
     images: [
-      "http://dummyimage.com/1080x1080.png/5fa2dd/ffffff",
-      "http://dummyimage.com/1080x1080.png/ff4444/ffffff",
-      "http://dummyimage.com/1080x1080.png/dddddd/000000",
+      "https://picsum.photos/seed/react-eshop-4/1080/1080",
+      "https://picsum.photos/seed/react-eshop-5/1080/1080",
+      "https://picsum.photos/seed/react-eshop-6/1080/1080",
     ],
     quantity: 10,
   },
 ];
 
 function App() {
+  const [cartOpen, setCartOpen] = useState(false);
   const [cartState, cartDispatch] = useReducer(cartReducer, {});
+  const [productsState, productsDispatch] = useReducer(productsReducer, []);
+
   const providerState = { cartState, cartDispatch };
+
+  const cartItemsCount = () => {
+    return Object.keys(cartState).length;
+  };
+
+  useEffect(() => {
+    productsDispatch(new Action(ProductActionEnum.ADD_PRODUCTS, products));
+  }, []);
+  
 
   return (
     <CartContext.Provider value={providerState}>
-      <List
-        grid={{ gutter: 16, column: 3 }}
-        dataSource={products}
-        renderItem={(item) => (
-          <List.Item>
-            <Card cover={<ProductImage images={item.images} />}>
-              <Meta title={item.title} description={item.price} />
-              <div style={{ float: "right" }}>
-                <QuantityControl item={item} />
-              </div>
-            </Card>
-          </List.Item>
-        )}
-      />
+      <div style={{ padding: "1rem" }}>
+        <PageHeader
+          title="React E-shop"
+          extra={
+            <CartIcon
+              count={cartItemsCount()}
+              onClick={() => cartItemsCount() && setCartOpen(!cartOpen)}
+            />
+          }
+        />
+        <ProductsList products={productsState} />
+        <Cart visible={cartOpen} onClose={() => setCartOpen(false)} />
+      </div>
     </CartContext.Provider>
   );
 }
