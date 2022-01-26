@@ -1,17 +1,21 @@
 import { Button, Drawer, Space } from "antd";
-import { useMemo } from "react";
+import { useProductContext } from "../contexts";
 import { useCartContext } from "../contexts/CartContext";
+import CartList from "./CartList";
 
 const Cart = ({ visible, onClose }) => {
-  const { cartState: cart, cartDispatch } = useCartContext();
-  const productIDs = Object.keys(cart);
-  const items = useMemo(
-    () =>
-      productIDs.map((id) => {
-      }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [productIDs.length]
-  );
+  const { cartState: cart } = useCartContext();
+  const { productsState } = useProductContext();
+
+  const getProduct = (id) => {
+    return productsState.filter((product) => id === product.id).shift();
+  };
+  const buildItemsList = () => {
+    return Object.values(cart).map((item) => ({
+      ...getProduct(item.id),
+      ...item,
+    }));
+  };
 
   return (
     <Drawer
@@ -25,7 +29,9 @@ const Cart = ({ visible, onClose }) => {
           </Button>
         </Space>
       }
-    ></Drawer>
+    >
+      <CartList products={buildItemsList()} />
+    </Drawer>
   );
 };
 

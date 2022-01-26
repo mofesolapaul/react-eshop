@@ -1,4 +1,5 @@
 import { ProductActionEnum } from "../enums";
+import Product from "../models/Product";
 
 export const productsReducer = (state = [], action) => {
   const { type, payload } = action;
@@ -6,7 +7,7 @@ export const productsReducer = (state = [], action) => {
 
   switch (type) {
     case ProductActionEnum.ADD_PRODUCTS:
-      changeSet = [...payload];
+      changeSet = payload.map(item => new Product(item));
       break;
     default:
       break;

@@ -12,7 +12,12 @@ stage 2:
 
 - add page header
 - components: CartIcon, Cart
-- point out advantage of useMemo in memoizing items computation when cart items change
 - move files into appropriate folders
 - show how to create public interfaces for react modules using index.js
-- add ProductsReducer
+
+stage 3:
+
+- add Product model
+- add ProductsReducer, show multiple contexts usage from app root
+- show items list in cart
+- components: CartList
